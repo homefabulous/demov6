@@ -5374,42 +5374,47 @@ function sheets() {
     });
   </script>
       
-     <script>
+    <script>
     function detectBrowser() {
-      const userAgent = navigator.userAgent;
-
-      if (userAgent.indexOf("Chrome") > -1) {
-        return "Chrome";
-      } else if (userAgent.indexOf("Firefox") > -1) {
-        return "Firefox";
-      } else if (userAgent.indexOf("Safari") > -1) {
-        return "Safari";
-      } else if (userAgent.indexOf("Edge") > -1 || userAgent.indexOf("Trident/") > -1) {
-        return "Edge";
-      } else {
+        const userAgent = navigator.userAgent;
+        
+        if (userAgent.includes("Edg/")) {
+            return "Edge";
+        } else if (userAgent.includes("Firefox")) {
+            return "Firefox";
+        } else if (userAgent.includes("Chrome") && !userAgent.includes("Chromium")) {
+            return "Chrome";
+        } else if (userAgent.includes("Safari") && !userAgent.includes("Chrome")) {
+            return "Safari";
+        }
         return "Unknown";
-      }
     }
 
     function displayBrowserButtons() {
-      const browser = detectBrowser();
-      const buttonsContainer = document.getElementById("browserButtons");
-
-      if (browser === "Chrome") {
-        buttonsContainer.innerHTML = '<button class="btn btn-primary">Chrome Specific Button</button>';
-      } else if (browser === "Firefox") {
-        buttonsContainer.innerHTML = '<button>Firefox Specific Button</button>';
-      } else if (browser === "Safari") {
-        buttonsContainer.innerHTML = '<button>Safari Specific Button</button>';
-      } else if (browser === "Edge") {
-        buttonsContainer.innerHTML = '<button>Edge Specific Button</button>';
-      } else {
-        buttonsContainer.innerHTML = '<button>Generic Button</button>';
-      }
+        const browser = detectBrowser();
+        const buttonsContainer = document.getElementById("browserButtons");
+        
+        if (!buttonsContainer) {
+            console.error("Could not find element with ID 'browserButtons'");
+            return;
+        }
+        
+        if (browser === "Chrome") {
+            buttonsContainer.innerHTML = '<button class="btn btn-primary">Chrome Specific Button</button>';
+        } else if (browser === "Firefox") {
+            buttonsContainer.innerHTML = '<button>Firefox Specific Button</button>';
+        } else if (browser === "Safari") {
+            buttonsContainer.innerHTML = '<button>Safari Specific Button</button>';
+        } else if (browser === "Edge") {
+            buttonsContainer.innerHTML = '<button>Edge Specific Button</button>';
+        } else {
+            buttonsContainer.innerHTML = '<button>Generic Button</button>';
+        }
     }
 
-    displayBrowserButtons();
-  </script> 
+    // Run when DOM is loaded
+    document.addEventListener('DOMContentLoaded', displayBrowserButtons);
+    </script>
       
       <script>
   document.addEventListener("DOMContentLoaded", function () {
