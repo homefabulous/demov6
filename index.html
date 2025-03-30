@@ -1521,7 +1521,10 @@ padding:10px;
       }
       
 .form-control{
-	max-width: 400px;
+	max-width: 600px;
+	display: flex;
+  align-items: center;
+  justify-content: center;
 }
     </style>
     
@@ -1808,7 +1811,24 @@ padding:10px;
     
    
      
-     
+ <div id="homepageAlert" class="alert alert-info alert-dismissible fade show" role="alert">
+    <strong>Set as Homepage?</strong> 
+           <button class="btn btn-sm btn-danger float-right" data-dismiss="alert">Not now</button>
+           <br>
+           <br>
+         
+         
+           Would you like to set this site as your homepage?
+           <div class="text-center" id="browserButtons">
+           </div>
+           
+          
+    <div class="form-check">
+      <input type="checkbox" class="form-check-input" id="dontShowAgain">
+      <label class="form-check-label" for="dontShowAgain">Don't show this again</label>
+    </div>
+        
+  </div>      
    
 	
 
