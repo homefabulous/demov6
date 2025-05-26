@@ -3366,12 +3366,14 @@ function attachModalTitleUpdate() {
 
    
    
-  // Open modal with iframe
-    $(document).on('click', '.open-modal-btn', function () {
-      const id = $(this).data('modal');
-      $('#iframeContent').attr('src', `/app/${id}`);
-      $('#iframeModal').modal('show');
-    }); 
+   $(document).on('click', '.open-modal-btn', function () {
+  const id = $(this).data('modal');
+  const url = `https://app.stackboard.one/app/${id}`; // <- full HTTPS URL
+  $('#iframeContent').attr('src', url);
+  $('#iframeModal').modal('show');
+});
+
+  
    
    
    
