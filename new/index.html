@@ -3366,12 +3366,14 @@ function attachModalTitleUpdate() {
 
    
    
-  $(document).on('click', '.open-modal-btn', function () {
+ $(document).on('click', '.open-modal-btn', function () {
   const id = $(this).data('modal');
-  const url = `${location.protocol}//${location.host}/app/${id}`;
+  const url = 'https://' + window.location.hostname + '/app/' + id;
+  console.log("Forcing HTTPS URL:", url);
   $('#iframeContent').attr('src', url);
   $('#iframeModal').modal('show');
 });
+
 
   
    
