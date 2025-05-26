@@ -1550,6 +1550,33 @@ padding:10px;
 	max-width: 600px;
 	
 }
+      
+      /* Include Font Awesome CSS in your project */
+/* <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"> */
+
+.input-with-clear {
+  position: relative;
+  width: 50%;
+}
+
+.input-with-clear .form-control {
+  padding-right: 30px; /* Space for the icon */
+}
+
+.clear-icon {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #ccc;
+  cursor: pointer;
+  display: none;
+  font-size: 16px; /* Adjust size as needed */
+}
+
+.clear-icon:hover {
+  color: #888;
+}
     </style>
     
     
@@ -1886,7 +1913,10 @@ padding:10px;
 
    
   <!-- Filter Input -->
-<center><input id="filterInput" type="text" class="form-control" placeholder="Type ctrl+/ to search... "></center>
+<center><div class="input-with-clear">
+  <input id="filterInput" type="text" class="form-control" placeholder="Type ctrl+/ to search...">
+  <i id="clearInput" class="fas fa-times clear-icon"></i>
+</div></center>
 
 <!-- No Results Message -->
 <div id="noResultsMessage" class="alert alert-warning d-none">No results found. Try searching for <a href="/demov6/add">more apps</a></div>
@@ -2374,7 +2404,7 @@ padding:10px;
     <div class="modal-dialog modal-xl">  <div class="modal-content">
 
             <div class="modal-header">
-                <h4 class="modal-title">App</h4>
+                <h4 class="modal-title">App info</h4>
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
             </div>
 
@@ -3353,7 +3383,7 @@ function attachModalTitleUpdate() {
         console.error("Modal title element not found or title is null!");
       }
 
-       // Update the modal image
+      // Update the modal image
       if (modalImage && image) {
         modalImage.src = image;
         modalImage.style.display = "inline-block";
@@ -3371,12 +3401,7 @@ function attachModalTitleUpdate() {
       const id = $(this).data('modal');
       $('#iframeContent').attr('src', `/app/${id}`);
       $('#iframeModal').modal('show');
-    });   
-   
-
-
-
-  
+    }); 
    
    
    
@@ -5662,6 +5687,27 @@ function editShortcut(shortcut) {
 
 // Add event listener to the "Show All Shortcuts" button
 document.getElementById('showShortcutsButton').addEventListener('click', showShortcutsList);
+      </script>
+      
+      <script>
+        document.addEventListener('DOMContentLoaded', () => {
+  const filterInput = document.getElementById('filterInput');
+  const clearIcon = document.getElementById('clearInput'); // Changed from clearButton
+
+  filterInput.addEventListener('input', () => {
+    if (filterInput.value.length > 0) {
+      clearIcon.style.display = 'block';
+    } else {
+      clearIcon.style.display = 'none';
+    }
+  });
+
+  clearIcon.addEventListener('click', () => {
+    filterInput.value = '';
+    clearIcon.style.display = 'none';
+    filterInput.focus();
+  });
+});
       </script>
       
 
