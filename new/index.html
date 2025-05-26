@@ -3353,7 +3353,7 @@ function attachModalTitleUpdate() {
         console.error("Modal title element not found or title is null!");
       }
 
-      // Update the modal image
+       // Update the modal image
       if (modalImage && image) {
         modalImage.src = image;
         modalImage.style.display = "inline-block";
@@ -3364,12 +3364,14 @@ function attachModalTitleUpdate() {
   });
 }
 
- // Open modal with iframe
+   
+   
+  // Open modal with iframe
     $(document).on('click', '.open-modal-btn', function () {
       const id = $(this).data('modal');
-      $('#iframeContent').attr('src', /app/${id});
+      $('#iframeContent').attr('src', `/app/${id}`);
       $('#iframeModal').modal('show');
-    });    
+    });   
    
 
 
