@@ -3369,7 +3369,7 @@ function attachModalTitleUpdate() {
   // Open modal with iframe
     $(document).on('click', '.open-modal-btn', function () {
       const id = $(this).data('modal');
-      $('#iframeContent').attr('src', `/app/${id}`);
+      $('#iframeContent').attr('src', `app/${id}`);
       $('#iframeModal').modal('show');
     }); 
    
