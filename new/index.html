@@ -3366,9 +3366,9 @@ function attachModalTitleUpdate() {
 
    
    
-   $(document).on('click', '.open-modal-btn', function () {
+  $(document).on('click', '.open-modal-btn', function () {
   const id = $(this).data('modal');
-  const url = `https://app.stackboard.one/app/${id}`; // <- full HTTPS URL
+  const url = `${location.protocol}//${location.host}/app/${id}`;
   $('#iframeContent').attr('src', url);
   $('#iframeModal').modal('show');
 });
