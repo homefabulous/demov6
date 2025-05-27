@@ -2400,22 +2400,7 @@ padding:10px;
   </div>   
   
          
-         <div class="modal fade" id="iframeModal" tabindex="-1" role="dialog">
-    <div class="modal-dialog modal-xl">  <div class="modal-content">
-
-            <div class="modal-header">
-                <h4 class="modal-title">App info</h4>
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
-            </div>
-
-            <div class="modal-body">
-                <iframe id="iframeContent" class="modal-iframe"></iframe>
-            </div>
-
-            <div class="modal-footer">  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-            </div>
-
-        </div>  </div>  </div>     
+            
           
           
        
@@ -2505,6 +2490,37 @@ padding:10px;
     </div>
   </div>
 </div>
+        
+   <div class="modal fade" id="iframeModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-xl">  <div class="modal-content">
+
+            <div class="modal-header">
+                <h4 class="modal-title">App info</h4>
+              
+              <div class="dropdown">
+  <button class="btn btn-sm btn-secondary dropdown-toggle" type="button" data-toggle="dropdown">
+    Options
+  </button>
+  <div class="dropdown-menu dropdown-menu-right">
+    <a class="dropdown-item" href="#" onclick="setIframeShortcut('kanban')">
+      <i class="fas fa-keyboard"></i> Set Shortcut
+    </a>
+  </div>
+</div>
+
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+
+            <div class="modal-body">
+                <iframe id="iframeContent" class="modal-iframe"></iframe>
+            </div>
+
+            <div class="modal-footer">  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+
+        </div>  </div>  </div>       
+        
+        
 <!-- Rename Section Modal -->
 <div class="modal fade" id="renameModal" tabindex="-1" aria-labelledby="renameModalLabel" aria-hidden="true">
   <div class="modal-dialog">
@@ -2654,8 +2670,31 @@ padding:10px;
 
    <!-- Quill.js -->
   <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
-      
-      
+      <script>
+       function openIframeModal(url) {
+  $('#iframeContent').attr('src', url);
+  $('#iframeModal').modal('show');
+}
+        
+        function setIframeShortcut(id) {
+  const fakeButton = {
+    dataset: {
+      url: `/app/${id}`,
+      name: id.charAt(0).toUpperCase() + id.slice(1), // e.g., 'Kanban'
+      openType: 'iframe',
+      size: 'large' // Optional
+    }
+  };
+
+  openShortcutBuilder(fakeButton);
+}
+const iframeUrl = $('#iframeContent').attr('src'); // "/app/kanban"
+const id = iframeUrl.split('/').pop(); // "kanban"
+setIframeShortcut(id);
+
+ 
+      </script>
+
     <script>
 // Initialize Quill editor for general notes
 let generalQuill;
@@ -3399,7 +3438,7 @@ function attachModalTitleUpdate() {
   // Open modal with iframe
     $(document).on('click', '.open-modal-btn', function () {
       const id = $(this).data('modal');
-      $('#iframeContent').attr('src', `/app/${id}`);
+      $('#iframeContent').attr('src', `/apps/${id}`);
       $('#iframeModal').modal('show');
     }); 
    
@@ -4231,7 +4270,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 });
-// Listen for keyboard shortcuts
 document.addEventListener("keydown", (event) => {
   const shortcuts = JSON.parse(localStorage.getItem("shortcuts")) || {};
   const refocusEnabled = JSON.parse(localStorage.getItem("refocusShortcutWindows")) || false;
@@ -4241,28 +4279,34 @@ document.addEventListener("keydown", (event) => {
       event.preventDefault();
       const { url, openType } = shortcuts[shortcut];
 
-      // Retrieve latest size setting from the button dataset
+      if (openType === "iframe") {
+        // Open the iframe modal instead of a new window
+        openIframeModal(url);
+        return;
+      }
+
+      // --- Existing logic for opening links/windows ---
       const button = document.querySelector(`.launch-button[data-url="${url}"]`);
-      const size = button ? button.dataset.size : "large"; // Default to medium if not found
+      const size = button ? button.dataset.size : "large";
 
       if (refocusEnabled && openedWindows.has(url)) {
         const existingWindow = openedWindows.get(url);
         if (existingWindow && !existingWindow.closed) {
           existingWindow.focus();
-          return; // Stop execution if refocus was successful
+          return;
         }
       }
 
-      // If refocusing fails or is disabled, open a new window
       if (openType === "newTab") {
         window.open(url, "_blank");
       } else {
         const newWindow = openWindow(url, size);
-        openedWindows.set(url, newWindow); // Track new window
+        openedWindows.set(url, newWindow);
       }
     }
   }
 });
+
 
 // Helper function to check if the pressed keys match the shortcut
 function checkShortcut(event, shortcut) {
@@ -4291,11 +4335,7 @@ function stickToTopButton(element, type) {
   alert('Sticky button feature coming soon!');
 }
 
-        </script>   
-      
-      
-      
-  <script>
+     
 // List of browser default shortcuts (add more if needed)
 const restrictedShortcuts = [
   "Ctrl+t", "Ctrl+T", "Ctrl+w", "Ctrl+W", "Ctrl+r", "Ctrl+R",
@@ -5104,54 +5144,84 @@ function isUntrackableDomain(url) {
         
 
 <script>
-document.getElementById('filterInput').addEventListener('input', function () {
-    const filterValue = this.value.toLowerCase();
+// --- New function to encapsulate your filtering logic ---
+function applyCardFilter(filterValue) {
     const cards = document.querySelectorAll('.card-item');
     const sections = document.querySelectorAll('.section-container');
     const searchResultsContainer = document.getElementById('searchResultsContainer');
-    let hasMatch = false; // Flag to track if any cards are visible
-
-    // Clear the search results container
-    searchResultsContainer.innerHTML = '';
-
-    // Track IDs of cards added to prevent duplicates
+    const noResultsMessage = document.getElementById('noResultsMessage'); // Get this element inside the function
+    let hasMatch = false;
     const addedCardIds = new Set();
 
-    cards.forEach(card => {
-        const cardText = card.innerText.toLowerCase();
-        const cardCategory = card.getAttribute('data-category').toLowerCase();
+    searchResultsContainer.innerHTML = ''; // Clear results each time
 
-        // Check if the filter value matches either the card text or category
-        if ((cardText.includes(filterValue) || cardCategory.includes(filterValue)) && 
-            !addedCardIds.has(card.dataset.id)) {
-            
-            hasMatch = true; // A match is found
-            addedCardIds.add(card.dataset.id); // Add the card ID to the set
+    if (filterValue) { // If there's a filter value, process cards for search results
+        cards.forEach(card => {
+            const cardText = card.innerText.toLowerCase();
+            const cardCategory = card.getAttribute('data-category').toLowerCase();
 
-            const clonedCard = card.cloneNode(true); // Clone the card
-            searchResultsContainer.appendChild(clonedCard); // Add to the search results container
+            if ((cardText.includes(filterValue) || cardCategory.includes(filterValue)) &&
+                !addedCardIds.has(card.dataset.id)) {
+                hasMatch = true;
+                addedCardIds.add(card.dataset.id);
+                const clonedCard = card.cloneNode(true);
+                searchResultsContainer.appendChild(clonedCard);
+            }
+        });
+
+        // Show/hide search results or no results message
+        if (hasMatch) {
+            noResultsMessage.classList.add('d-none');
+            searchResultsContainer.classList.remove('d-none');
+            sections.forEach(section => section.classList.add('d-none')); // Hide original sections
+        } else {
+            noResultsMessage.classList.remove('d-none');
+            searchResultsContainer.classList.add('d-none');
+            sections.forEach(section => section.classList.add('d-none')); // Still hide original sections if no results
+        }
+    } else { // No filter value (input is empty) - show original sections
+        noResultsMessage.classList.add('d-none');
+        searchResultsContainer.classList.add('d-none');
+        sections.forEach(section => section.classList.remove('d-none')); // Show original sections
+    }
+}
+// --- End of new function ---
+
+
+document.addEventListener('DOMContentLoaded', () => {
+    const filterInput = document.getElementById('filterInput');
+    // Ensure your clear button has the ID 'clearInput' as discussed
+    const clearButton = document.getElementById('clearInput');
+
+    // Initial load: Display all cards by applying an empty filter
+    applyCardFilter('');
+
+    // Listener for typing in the input field
+    filterInput.addEventListener('input', function () {
+        const filterValue = this.value.toLowerCase();
+        applyCardFilter(filterValue); // Call the new function
+
+        // Show/hide clear button
+        if (filterValue.length > 0) {
+            clearButton.style.display = 'block';
+        } else {
+            clearButton.style.display = 'none';
         }
     });
 
-    // Show or hide the "No Results" message based on matches
-    const noResultsMessage = document.getElementById('noResultsMessage');
-    if (hasMatch) {
-        noResultsMessage.classList.add('d-none');
-        searchResultsContainer.classList.remove('d-none');
-        sections.forEach(section => section.classList.add('d-none')); // Hide all sections
-    } else {
-        noResultsMessage.classList.remove('d-none');
-        searchResultsContainer.classList.add('d-none');
-        sections.forEach(section => section.classList.remove('d-none')); // Show all sections
-    }
+    // Listener for the clear (x) button click
+    if (clearButton) { // Check if the button exists to prevent errors
+        clearButton.addEventListener('click', () => {
+            filterInput.value = ''; // Clear the input field
+            clearButton.style.display = 'none'; // Hide the clear button
+            filterInput.focus(); // Keep focus on the input
 
-    // Reset view when no filter is applied
-    if (!filterValue) {
-        searchResultsContainer.classList.add('d-none');
-        sections.forEach(section => section.classList.remove('d-none'));
+            // --- The "re-trigger" fix for clearing ---
+            applyCardFilter(''); // Call the new function with an empty string
+            // This will reset the view to show all original sections
+        });
     }
 });
-
 
 
 
@@ -5689,26 +5759,7 @@ function editShortcut(shortcut) {
 document.getElementById('showShortcutsButton').addEventListener('click', showShortcutsList);
       </script>
       
-      <script>
-        document.addEventListener('DOMContentLoaded', () => {
-  const filterInput = document.getElementById('filterInput');
-  const clearIcon = document.getElementById('clearInput'); // Changed from clearButton
-
-  filterInput.addEventListener('input', () => {
-    if (filterInput.value.length > 0) {
-      clearIcon.style.display = 'block';
-    } else {
-      clearIcon.style.display = 'none';
-    }
-  });
-
-  clearIcon.addEventListener('click', () => {
-    filterInput.value = '';
-    clearIcon.style.display = 'none';
-    filterInput.focus();
-  });
-});
-      </script>
+      
       
 
 <div id="noCardsPlaceholder2" style="display: none;">
