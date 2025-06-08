@@ -3435,12 +3435,14 @@ function attachModalTitleUpdate() {
 
    
    
-  // Open modal with iframe
-    $(document).on('click', '.open-modal-btn', function () {
-      const id = $(this).data('modal');
-      $('#iframeContent').attr('src', `/app/${id}`);
-      $('#iframeModal').modal('show');
-    }); 
+  $(document).on('click', '.open-modal-btn', function () {
+  const id = $(this).data('modal');
+  const modalType = $(this).data('target'); // '#iframeModal' or '#myModal'
+  
+  $('#iframeContent').attr('src', `/app/${id}`);
+  $(modalType).modal('show');
+});
+
    
    
    
