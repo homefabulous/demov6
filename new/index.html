@@ -3377,9 +3377,10 @@ cardDiv.dataset.modalType = card.modalType;
       sectionContainer.appendChild(cardDiv);
     }
   });
-
-  // Attach modal update functionality after cards are loaded
- function attachModalTitleUpdate() {
+ // Attach modal update functionality after cards are loaded
+  attachModalTitleUpdate();
+}
+function attachModalTitleUpdate() {
   const modalButtons = document.querySelectorAll("[data-toggle='modal']");
 
   modalButtons.forEach(button => {
@@ -3404,9 +3405,12 @@ cardDiv.dataset.modalType = card.modalType;
           } else {
             modalImage.style.display = "none";
           }
+        }
+      }
     });
   });
 }
+
 
 
    
