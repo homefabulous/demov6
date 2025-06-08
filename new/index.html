@@ -3379,36 +3379,37 @@ cardDiv.dataset.modalType = card.modalType;
   });
 
   // Attach modal update functionality after cards are loaded
-  attachModalTitleUpdate();
-}
-
-function attachModalTitleUpdate() {
-  const modalButtons = document.querySelectorAll("[data-target='#myModal']");
+ function attachModalTitleUpdate() {
+  const modalButtons = document.querySelectorAll("[data-toggle='modal']");
 
   modalButtons.forEach(button => {
     button.addEventListener("click", () => {
       const title = button.getAttribute("data-title");
       const image = button.getAttribute("data-image");
-      const modalTitle = document.getElementById("modalTitle");
-      const modalImage = document.getElementById("modalImage");
+      const modalType = button.getAttribute("data-target");
 
-      // Update the modal title
-      if (modalTitle && title) {
-        modalTitle.innerText = title;
-      } else {
-        console.error("Modal title element not found or title is null!");
-      }
+      // Only update if it's the myModal
+      if (modalType === "#myModal") {
+        const modalTitle = document.getElementById("modalTitle");
+        const modalImage = document.getElementById("modalImage");
 
-      // Update the modal image
-      if (modalImage && image) {
-        modalImage.src = image;
-        modalImage.style.display = "inline-block";
-      } else if (modalImage) {
-        modalImage.style.display = "none";
+        if (modalTitle && title) {
+          modalTitle.innerText = title;
+        }
+
+        if (modalImage) {
+          if (image) {
+            modalImage.src = image;
+            modalImage.style.display = "inline-block";
+          } else {
+            modalImage.style.display = "none";
+          }
+        }
       }
     });
   });
 }
+
 
    
    
